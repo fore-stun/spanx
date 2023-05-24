@@ -10,11 +10,11 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 )
 
-type ConvertToJSON struct {
+type JSONFromMultipartForm struct {
 	Next caddyhttp.Handler
 }
 
-func (c ConvertToJSON) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
+func (c JSONFromMultipartForm) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	if r.Method == http.MethodPost && r.Header.Get("Content-Type") == "multipart/form-data" {
 		// Parse the multipart form
 		err := r.ParseMultipartForm(32 << 20) // Set an appropriate max memory value
@@ -53,13 +53,13 @@ func (c ConvertToJSON) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 }
 
 func init() {
-	caddy.RegisterModule(ConvertToJSON{})
+	caddy.RegisterModule(JSONFromMultipartForm{})
 }
 
 // CaddyModule returns the Caddy module information.
-func (ConvertToJSON) CaddyModule() caddy.ModuleInfo {
+func (JSONFromMultipartForm) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.spanx",
-		New: func() caddy.Module { return new(ConvertToJSON) },
+		New: func() caddy.Module { return new(JSONFromMultipartForm) },
 	}
 }
