@@ -11,9 +11,11 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"go.uber.org/zap"
 )
 
 type JSONFromMultipartForm struct {
+	logger *zap.Logger
 }
 
 func (c JSONFromMultipartForm) ServeHTTP(
@@ -78,6 +80,11 @@ func (JSONFromMultipartForm) CaddyModule() caddy.ModuleInfo {
 		ID:  "http.handlers.spanx",
 		New: func() caddy.Module { return new(JSONFromMultipartForm) },
 	}
+}
+
+func (c *JSONFromMultipartForm) Provision(ctx caddy.Context) (err error) {
+	c.logger = ctx.Logger(c)
+	return nil
 }
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
