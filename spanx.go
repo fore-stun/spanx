@@ -64,3 +64,9 @@ func (JSONFromMultipartForm) CaddyModule() caddy.ModuleInfo {
 		New: func() caddy.Module { return new(JSONFromMultipartForm) },
 	}
 }
+
+// Interface guards
+var (
+	_ caddyhttp.MiddlewareHandler = (*JSONFromMultipartForm)(nil)
+	_ caddyfile.Unmarshaler       = (*JSONFromMultipartForm)(nil)
+)
