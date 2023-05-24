@@ -16,40 +16,41 @@ type JSONFromMultipartForm struct {
 
 func (c JSONFromMultipartForm) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	if r.Method == http.MethodPost && r.Header.Get("Content-Type") == "multipart/form-data" {
-		// Parse the multipart form
-		err := r.ParseMultipartForm(32 << 20) // Set an appropriate max memory value
+		jsonPayload, err := ConvertFormDataToJSON(r)
 		if err != nil {
-			// Handle parsing error
-			http.Error(w, "Failed to parse multipart form", http.StatusBadRequest)
-			return nil
-		}
-
-		// Convert form values to JSON
-		formValues := make(map[string]interface{})
-		for key, values := range r.MultipartForm.Value {
-			if len(values) == 1 {
-				formValues[key] = values[0]
-			} else {
-				formValues[key] = values
-			}
-		}
-
-		// Convert form values to JSON payload
-		jsonPayload, err := json.Marshal(formValues)
-		if err != nil {
-			// Handle JSON conversion error
 			http.Error(w, "Failed to convert to JSON", http.StatusInternalServerError)
 			return nil
 		}
 
-		// Set the request body to the JSON payload
 		r.Body = ioutil.NopCloser(bytes.NewReader(jsonPayload))
 		r.ContentLength = int64(len(jsonPayload))
 		r.Header.Set("Content-Type", "application/json")
 	}
 
-	// Call the next handler in the chain
 	return c.Next.ServeHTTP(w, r)
+}
+
+func ConvertFormDataToJSON(r *http.Request) ([]byte, error) {
+	err := r.ParseMultipartForm(32 << 20)
+	if err != nil {
+		return nil, err
+	}
+
+	formValues := make(map[string]interface{})
+	for key, values := range r.MultipartForm.Value {
+		if len(values) == 1 {
+			formValues[key] = values[0]
+		} else {
+			formValues[key] = values
+		}
+	}
+
+	jsonPayload, err := json.Marshal(formValues)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonPayload, nil
 }
 
 func init() {
