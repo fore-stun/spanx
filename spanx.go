@@ -3,7 +3,7 @@ package spanx
 import (
 	"bytes"
 	"encoding/json"
-	"mime/multipart"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/caddyserver/caddy/v2"
