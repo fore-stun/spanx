@@ -11,10 +11,13 @@ import (
 )
 
 type JSONFromMultipartForm struct {
-	Next caddyhttp.Handler
 }
 
-func (c JSONFromMultipartForm) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
+func (c JSONFromMultipartForm) ServeHTTP(
+	w http.ResponseWriter,
+	r *http.Request,
+	next caddyhttp.Handler,
+) error {
 	if r.Method == http.MethodPost && r.Header.Get("Content-Type") == "multipart/form-data" {
 		jsonPayload, err := ConvertFormDataToJSON(r)
 		if err != nil {
@@ -27,7 +30,7 @@ func (c JSONFromMultipartForm) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		r.Header.Set("Content-Type", "application/json")
 	}
 
-	return c.Next.ServeHTTP(w, r)
+	return next.ServeHTTP(w, r)
 }
 
 func ConvertFormDataToJSON(r *http.Request) ([]byte, error) {
