@@ -1,4 +1,4 @@
-package yourmodule
+package spanx
 
 import (
 	"bytes"
@@ -59,7 +59,7 @@ func init() {
 // CaddyModule returns the Caddy module information.
 func (ConvertToJSON) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		ID:  "http.handlers.yourmodule",
+		ID:  "http.handlers.spanx",
 		New: func() caddy.Module { return new(ConvertToJSON) },
 	}
 }
