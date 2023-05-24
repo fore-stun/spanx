@@ -7,6 +7,8 @@ import (
 	"net/http"
 
 	"github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 )
 
@@ -58,6 +60,7 @@ func ConvertFormDataToJSON(r *http.Request) ([]byte, error) {
 
 func init() {
 	caddy.RegisterModule(JSONFromMultipartForm{})
+	httpcaddyfile.RegisterHandlerDirective("jaon_from_multipart_form", parseCaddyfile)
 }
 
 // CaddyModule returns the Caddy module information.
@@ -66,6 +69,18 @@ func (JSONFromMultipartForm) CaddyModule() caddy.ModuleInfo {
 		ID:  "http.handlers.spanx",
 		New: func() caddy.Module { return new(JSONFromMultipartForm) },
 	}
+}
+
+// UnmarshalCaddyfile implements caddyfile.Unmarshaler.
+func (c *JSONFromMultipartForm) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+	return nil
+}
+
+// parseCaddyfile unmarshals tokens from h into a new JSONFromMultipartForm.
+func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
+	var c JSONFromMultipartForm
+	err := c.UnmarshalCaddyfile(h.Dispenser)
+	return c, err
 }
 
 // Interface guards
