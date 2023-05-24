@@ -3,7 +3,7 @@ package spanx
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -31,7 +31,7 @@ func (c JSONFromMultipartForm) ServeHTTP(
 			return nil
 		}
 
-		r.Body = ioutil.NopCloser(bytes.NewReader(jsonPayload))
+		r.Body = io.NopCloser(bytes.NewReader(jsonPayload))
 		r.ContentLength = int64(len(jsonPayload))
 		r.Header.Set("Content-Type", "application/json")
 	}
