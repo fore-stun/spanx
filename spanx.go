@@ -24,6 +24,7 @@ func (c JSONFromMultipartForm) ServeHTTP(
 	next caddyhttp.Handler,
 ) error {
 	if r.Method == http.MethodPost && matchesContentType(r, "multipart/form-data") {
+		c.logger.Debug("Identified multipart/form-data", zap.String("path", r.URL.Path))
 		jsonPayload, err := ConvertFormDataToJSON(r)
 		if err != nil {
 			http.Error(w, "Failed to convert to JSON", http.StatusInternalServerError)
