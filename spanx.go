@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
@@ -20,7 +21,7 @@ func (c JSONFromMultipartForm) ServeHTTP(
 	r *http.Request,
 	next caddyhttp.Handler,
 ) error {
-	if r.Method == http.MethodPost && r.Header.Get("Content-Type") == "multipart/form-data" {
+	if r.Method == http.MethodPost && matchesContentType(r, "multipart/form-data") {
 		jsonPayload, err := ConvertFormDataToJSON(r)
 		if err != nil {
 			http.Error(w, "Failed to convert to JSON", http.StatusInternalServerError)
@@ -33,6 +34,14 @@ func (c JSONFromMultipartForm) ServeHTTP(
 	}
 
 	return next.ServeHTTP(w, r)
+}
+
+func matchesContentType(r *http.Request, prefix string) bool {
+	// Get the request's Content-Type header
+	rct := strings.ToLower(r.Header.Get("Content-Type"))
+
+	// Check if the Content-Type header starts with the given prefix (case-insensitive)
+	return strings.HasPrefix(rct, strings.ToLower(prefix))
 }
 
 func ConvertFormDataToJSON(r *http.Request) ([]byte, error) {
