@@ -73,6 +73,7 @@ func ConvertFormDataToJSON(r *http.Request) ([]byte, error) {
 func init() {
 	caddy.RegisterModule(JSONFromMultipartForm{})
 	httpcaddyfile.RegisterHandlerDirective("jaon_from_multipart_form", parseCaddyfile)
+	httpcaddyfile.RegisterHandlerDirective("json_from_multipart_form", parseCaddyfile)
 }
 
 // CaddyModule returns the Caddy module information.
