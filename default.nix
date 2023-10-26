@@ -8,6 +8,7 @@ buildGoApplication {
   pwd = ./.;
   src = ./.;
   modules = ./gomod2nix.toml;
+  subPackages = [ "cmd/caddy" ];
   meta = {
     license = lib.licenses.mit;
     mainProgram = "caddy";
