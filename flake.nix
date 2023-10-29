@@ -20,6 +20,9 @@
         callPackage = pkgs.darwin.apple_sdk_11_0.callPackage or pkgs.callPackage;
       in
       {
+        overlays.default = final: prev: {
+          caddy-extended = self.packages.${system}.default;
+        };
         packages.default = callPackage ./. {
           inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
         };
