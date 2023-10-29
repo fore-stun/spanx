@@ -1,4 +1,4 @@
-name: Populate dependency cache
+name: Build and cache
 
 permissions:
   id-token: write
@@ -15,8 +15,8 @@ defaults:
     shell: bash --noprofile --norc -eufo pipefail {0}
 
 jobs:
-  deps:
-    name: Cache dependencies
+  build:
+    name: Build and cache
     runs-on: ubuntu-latest
 
     steps:
@@ -32,3 +32,7 @@ jobs:
       - name: Build dependencies
         run: |
           nix build -L ".#default.vendorEnv"
+
+      - name: Build executable
+        run: |
+          nix build -L
