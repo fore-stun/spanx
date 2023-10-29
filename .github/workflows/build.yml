@@ -16,8 +16,16 @@ defaults:
 
 jobs:
   build:
-    name: Build and cache
+    name: Build and cache ${{ matrix.build_pkg }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        build_pkg: [default]
+
+    env:
+      BUILD_PKG: ${{ matrix.build_pkg }}
 
     steps:
       - uses: actions/checkout@v4
@@ -31,8 +39,8 @@ jobs:
 
       - name: Build dependencies
         run: |
-          nix build -L ".#default.vendorEnv"
+          nix build -L ".#${BUILD_PKG?}.vendorEnv"
 
       - name: Build executable
         run: |
-          nix build -L
+          nix build -L ".#${BUILD_PKG?}"
