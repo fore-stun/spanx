@@ -11,6 +11,11 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, gomod2nix }:
+    {
+      overlays.default = final: prev: {
+        caddy-extended = self.packages.${prev.system}.default;
+      };
+    } //
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
