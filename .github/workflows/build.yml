@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        build_pkg: [default]
+        build_pkg: [default, aarch64-linux]
 
     env:
       BUILD_PKG: ${{ matrix.build_pkg }}
