@@ -166,3 +166,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	howett.net/plist v1.0.0 // indirect
 )
+
+replace github.com/lindenlab/caddy-s3-proxy => github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231109031949-900859997522

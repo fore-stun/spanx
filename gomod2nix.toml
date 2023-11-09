@@ -224,8 +224,9 @@ schema = 3
     version = "v0.2.1"
     hash = "sha256-bxEY0wYu4Um0t7sakLyMwMPDXfv2x07gjckKSyAypsc="
   [mod."github.com/lindenlab/caddy-s3-proxy"]
-    version = "v0.5.6"
-    hash = "sha256-M1mEcqdsYVog87ZnMaXgczoR1T1tqObn7q+2NOC2lEk="
+    version = "v0.5.7-0.20231109031949-900859997522"
+    hash = "sha256-Zs4xiKo8z1LsYqgsTD5wx/eZ6igKHpZ2bJK4kIk1AMk="
+    replaced = "github.com/fore-stun/caddy-s3-proxy"
   [mod."github.com/manifoldco/promptui"]
     version = "v0.9.0"
     hash = "sha256-Fe2OPoyRExZejwtUBivKhfJAJW7o9b1eyYpgDlWQ1No="

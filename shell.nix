@@ -21,7 +21,7 @@ let
       )" \
         | sed -E -n -e 's/^Executing command: //p'
     ''
-    else throw "Untested";
+    else "echo open";
 in
 mkShell {
   inherit name;
