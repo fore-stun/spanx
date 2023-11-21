@@ -683,8 +683,6 @@ github.com/felixge/httpsnoop v1.0.3 h1:s/nj+GCswXYzN5v2DpNMuMQYe+0DDwt5WVCU6CWBd
 github.com/felixge/httpsnoop v1.0.3/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568/go.mod h1:xEzjJPgXI435gkrCt3MPfRiAkVrwSbHsst4LCFVfpJc=
 github.com/flynn/noise v1.0.0/go.mod h1:xbMo+0i6+IGbYdJhF31t2eR1BIU0CYc12+BNAKwUTag=
-github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231109031949-900859997522 h1:x2t5+LbPHBThyo7Imuo6Lx60w6cs8ONJCfM6X+6gEKY=
-github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231109031949-900859997522/go.mod h1:RfxX3GdBB8sWh1VPnb7tWixe8FZt347PWbGcUSWiqsE=
 github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231121003340-3856555554eb h1:9izjpbYla0luJCIYvF+GMFtVyXtyOfXiZ7VM3ktjReM=
 github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231121003340-3856555554eb/go.mod h1:RfxX3GdBB8sWh1VPnb7tWixe8FZt347PWbGcUSWiqsE=
 github.com/francoispqt/gojay v1.2.13/go.mod h1:ehT5mTG4ua4581f1++1WLG0vPdaA9HaiDsoyrBGkyDY=
