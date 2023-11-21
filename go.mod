@@ -167,4 +167,4 @@ require (
 	howett.net/plist v1.0.0 // indirect
 )
 
-replace github.com/lindenlab/caddy-s3-proxy => github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231109031949-900859997522
+replace github.com/lindenlab/caddy-s3-proxy => github.com/fore-stun/caddy-s3-proxy v0.5.7-0.20231121003340-3856555554eb
