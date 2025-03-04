@@ -1,4 +1,4 @@
-package replacebody
+package spanx
 
 import (
 	"bytes"
@@ -11,22 +11,22 @@ import (
 )
 
 func init() {
-	caddy.RegisterModule(ReplaceBody{})
+	caddy.RegisterModule(Catenulate{})
 }
 
-// ReplaceBody implements a handler that replaces the request body
-type ReplaceBody struct{}
+// Catenulate implements a handler that replaces the request body
+type Catenulate struct{}
 
 // CaddyModule returns the Caddy module information.
-func (ReplaceBody) CaddyModule() caddy.ModuleInfo {
+func (Catenulate) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		ID:  "http.handlers.replace_body",
-		New: func() caddy.Module { return new(ReplaceBody) },
+		ID:  "http.handlers.catenulate",
+		New: func() caddy.Module { return new(Catenulate) },
 	}
 }
 
 // ServeHTTP implements caddyhttp.MiddlewareHandler.
-func (rb ReplaceBody) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	// Create a custom ResponseWriter to capture the response
 	crw := &captureResponseWriter{ResponseWriter: w}
 
@@ -55,13 +55,13 @@ func (crw *captureResponseWriter) Write(b []byte) (int, error) {
 }
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
-func (rb *ReplaceBody) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+func (c *Catenulate) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	return nil
 }
 
 // Interface guards
 var (
-	_ caddy.Module                = (*ReplaceBody)(nil)
-	_ caddyhttp.MiddlewareHandler = (*ReplaceBody)(nil)
-	_ caddyfile.Unmarshaler       = (*ReplaceBody)(nil)
+	_ caddy.Module                = (*Catenulate)(nil)
+	_ caddyhttp.MiddlewareHandler = (*Catenulate)(nil)
+	_ caddyfile.Unmarshaler       = (*Catenulate)(nil)
 )
