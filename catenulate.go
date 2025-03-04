@@ -7,11 +7,13 @@ import (
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 )
 
 func init() {
 	caddy.RegisterModule(Catenulate{})
+	httpcaddyfile.RegisterHandlerDirective("replace_request_body", parseCatenulate)
 }
 
 // Catenulate implements a handler that replaces the request body
@@ -57,6 +59,13 @@ func (crw *captureResponseWriter) Write(b []byte) (int, error) {
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
 func (c *Catenulate) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	return nil
+}
+
+// parseCatenulate unmarshals tokens from h into a new Catenulate
+func parseCatenulate(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
+	var c Catenulate
+	err := c.UnmarshalCaddyfile(h.Dispenser)
+	return c, err
 }
 
 // Interface guards
