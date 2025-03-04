@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"go.uber.org/zap"
 )
 
 func init() {
@@ -17,7 +19,9 @@ func init() {
 }
 
 // Catenulate implements a handler that replaces the request body
-type Catenulate struct{}
+type Catenulate struct {
+	logger *zap.Logger
+}
 
 // CaddyModule returns the Caddy module information.
 func (Catenulate) CaddyModule() caddy.ModuleInfo {
@@ -32,8 +36,15 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	// Create a custom ResponseWriter to capture the response
 	crw := &captureResponseWriter{ResponseWriter: w}
 
+	rd, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		return err
+	}
+	c.logger.Debug("Preparing to capture response body",
+		zap.ByteString("request", rd))
+
 	// Call the next handler
-	err := next.ServeHTTP(crw, r)
+	err = next.ServeHTTP(crw, r)
 	if err != nil {
 		return err
 	}
@@ -41,6 +52,14 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	// Replace the request body with the captured response body
 	r.Body = io.NopCloser(bytes.NewReader(crw.body))
 	r.ContentLength = int64(len(crw.body))
+
+	rd, err = httputil.DumpRequest(r, true)
+	if err != nil {
+		return err
+	}
+	c.logger.Debug("Replacing request body with response body",
+		zap.ByteString("request", rd),
+		zap.ByteString("crw", crw.body))
 
 	return nil
 }
@@ -54,6 +73,11 @@ type captureResponseWriter struct {
 func (crw *captureResponseWriter) Write(b []byte) (int, error) {
 	crw.body = append(crw.body, b...)
 	return len(b), nil
+}
+
+func (c *Catenulate) Provision(ctx caddy.Context) (err error) {
+	c.logger = ctx.Logger(c)
+	return c.rp.Provision(ctx)
 }
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
