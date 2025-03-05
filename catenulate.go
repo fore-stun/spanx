@@ -109,9 +109,9 @@ func (c *Catenulate) Provision(ctx caddy.Context) (err error) {
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
 func (c *Catenulate) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	rp := new(reverseproxy.Handler)
-	c.logger.Debug("Creating reverse proxy")
-	err := rp.UnmarshalCaddyfile(d)
+	// c.logger.Debug("Creating reverse proxy")
+	c.rp = reverseproxy.Handler{}
+	err := c.rp.UnmarshalCaddyfile(d)
 	if err != nil {
 		return err
 	}
