@@ -40,6 +40,7 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 
 	// Create a custom ResponseWriter to capture the response
 	crw := &captureResponseWriter{
+		// logger:         c.logger,
 		ResponseWriter: w,
 		body:           &buffer,
 	}
@@ -48,7 +49,7 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	if err != nil {
 		return err
 	}
-	c.logger.Debug("Preparing to capture response body",
+	c.logger.Debug("Preparing to run reverse proxy and capture response body",
 		zap.ByteString("request", rd))
 
 	// Invoke the reverse proxy
@@ -58,6 +59,8 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	}
 
 	body := buffer.Bytes()
+	c.logger.Debug("Extracted body",
+		zap.ByteString("body", body))
 
 	// Replace the request body with the captured response body
 	r.Body = io.NopCloser(bytes.NewReader(body))
@@ -73,7 +76,7 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	}
 	c.logger.Debug("Replacing request body with response body",
 		zap.ByteString("request", rd),
-		zap.ByteString("crw", crw.body))
+		zap.ByteString("body", body))
 
 	// Call the next handler
 	return next.ServeHTTP(w, r)
@@ -81,12 +84,15 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 
 // captureResponseWriter is a custom ResponseWriter that captures the response body
 type captureResponseWriter struct {
+	// logger *zap.Logger
 	http.ResponseWriter
 	body        *bytes.Buffer
 	contentType string
 }
 
 func (crw *captureResponseWriter) Write(b []byte) (int, error) {
+	// crw.logger.Debug("Writing and storing response",
+	// 	zap.ByteString("body", b))
 	crw.body.Write(b)
 	return crw.ResponseWriter.Write(b)
 }
@@ -103,6 +109,7 @@ func (c *Catenulate) Provision(ctx caddy.Context) (err error) {
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
 func (c *Catenulate) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+	// c.logger.Debug("Creating reverse proxy")
 	c.rp = reverseproxy.Handler{}
 	err := c.rp.UnmarshalCaddyfile(d)
 	if err != nil {
