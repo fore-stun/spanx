@@ -5,22 +5,25 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"strconv"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp/reverseproxy"
 	"go.uber.org/zap"
 )
 
 func init() {
 	caddy.RegisterModule(Catenulate{})
-	httpcaddyfile.RegisterHandlerDirective("replace_request_body", parseCatenulate)
+	httpcaddyfile.RegisterHandlerDirective("chain_reverse_proxy", parseCatenulate)
 }
 
 // Catenulate implements a handler that replaces the request body
 type Catenulate struct {
 	logger *zap.Logger
+	rp     reverseproxy.Handler
 }
 
 // CaddyModule returns the Caddy module information.
@@ -33,8 +36,13 @@ func (Catenulate) CaddyModule() caddy.ModuleInfo {
 
 // ServeHTTP implements caddyhttp.MiddlewareHandler.
 func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+	var buffer bytes.Buffer
+
 	// Create a custom ResponseWriter to capture the response
-	crw := &captureResponseWriter{ResponseWriter: w}
+	crw := &captureResponseWriter{
+		ResponseWriter: w,
+		body:           &buffer,
+	}
 
 	rd, err := httputil.DumpRequest(r, true)
 	if err != nil {
@@ -43,15 +51,21 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	c.logger.Debug("Preparing to capture response body",
 		zap.ByteString("request", rd))
 
-	// Call the next handler
-	err = next.ServeHTTP(crw, r)
+	// Invoke the reverse proxy
+	err = c.rp.ServeHTTP(crw, r, nil)
 	if err != nil {
 		return err
 	}
 
+	body := buffer.Bytes()
+
 	// Replace the request body with the captured response body
-	r.Body = io.NopCloser(bytes.NewReader(crw.body))
-	r.ContentLength = int64(len(crw.body))
+	r.Body = io.NopCloser(bytes.NewReader(body))
+	r.ContentLength = int64(len(body))
+
+	// Update headers if necessary
+	r.Header.Set("Content-Length", strconv.Itoa(len(body)))
+	r.Header.Set("Content-Type", crw.contentType)
 
 	rd, err = httputil.DumpRequest(r, true)
 	if err != nil {
@@ -61,19 +75,25 @@ func (c Catenulate) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 		zap.ByteString("request", rd),
 		zap.ByteString("crw", crw.body))
 
-	return nil
+	// Call the next handler
+	return next.ServeHTTP(w, r)
 }
 
 // captureResponseWriter is a custom ResponseWriter that captures the response body
 type captureResponseWriter struct {
 	http.ResponseWriter
-	body []byte
+	body        *bytes.Buffer
+	contentType string
 }
 
 func (crw *captureResponseWriter) Write(b []byte) (int, error) {
-	crw.body = append(crw.body, b...)
-	crw.ResponseWriter.Write(b)
-	return len(b), nil
+	crw.body.Write(b)
+	return crw.ResponseWriter.Write(b)
+}
+
+func (crw *captureResponseWriter) WriteHeader(statusCode int) {
+	crw.contentType = crw.Header().Get("Content-Type")
+	crw.ResponseWriter.WriteHeader(statusCode)
 }
 
 func (c *Catenulate) Provision(ctx caddy.Context) (err error) {
@@ -83,6 +103,11 @@ func (c *Catenulate) Provision(ctx caddy.Context) (err error) {
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
 func (c *Catenulate) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+	c.rp = reverseproxy.Handler{}
+	err := c.rp.UnmarshalCaddyfile(d)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
