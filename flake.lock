@@ -28,27 +28,26 @@
         ]
       },
       "locked": {
-        "lastModified": 1698345661,
-        "narHash": "sha256-aHdDJ/2R4mk4BeJ03W4OV94Op8PVYvfjSyQucl0W9DQ=",
-        "owner": "fore-stun",
+        "lastModified": 1733668782,
+        "narHash": "sha256-tPsqU00FhgdFr0JiQUiBMgPVbl1jbPCY5gbFiJycL3I=",
+        "owner": "nix-community",
         "repo": "gomod2nix",
-        "rev": "1340c2a983bfde3bf4417e44f4b69e7e354b3642",
+        "rev": "514283ec89c39ad0079ff2f3b1437404e4cba608",
         "type": "github"
       },
       "original": {
-        "owner": "fore-stun",
-        "ref": "fix-recursive-symlinker",
+        "owner": "nix-community",
         "repo": "gomod2nix",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1695644571,
-        "narHash": "sha256-asS9dCCdlt1lPq0DLwkVBbVoEKuEuz+Zi3DG7pR/RxA=",
+        "lastModified": 1739580444,
+        "narHash": "sha256-+/bSz4EAVbqz8/HsIGLroF8aNaO8bLRL7WfACN+24g4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6500b4580c2a1f3d0f980d32d285739d8e156d92",
+        "rev": "8bb37161a0488b89830168b81c48aed11569cb93",
         "type": "github"
       },
       "original": {
