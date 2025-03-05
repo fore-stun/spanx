@@ -72,6 +72,7 @@ type captureResponseWriter struct {
 
 func (crw *captureResponseWriter) Write(b []byte) (int, error) {
 	crw.body = append(crw.body, b...)
+	crw.ResponseWriter.Write(b)
 	return len(b), nil
 }
 
