@@ -5,6 +5,7 @@
 , hostPlatform
 , mkGoEnv
 , mkShell
+, xcaddy
 , xdg-utils
 , zsh
 }:
@@ -22,6 +23,10 @@ let
         | sed -E -n -e 's/^Executing command: //p'
     ''
     else "echo open";
+
+  customPackages = [
+    xcaddy
+  ];
 in
 mkShell {
   inherit name;
@@ -30,7 +35,7 @@ mkShell {
     goEnv
     gomod2nix
     go-mod-graph-chart
-  ];
+  ] ++ customPackages;
 
   shellHook = ''
     export NIX_SHELL_NAME="${name}"
