@@ -18,6 +18,7 @@ import (
 func init() {
 	caddy.RegisterModule(Catenulate{})
 	httpcaddyfile.RegisterHandlerDirective("chain_reverse_proxy", parseCatenulate)
+	httpcaddyfile.RegisterDirectiveOrder("chain_reverse_proxy", httpcaddyfile.Before, "reverse_proxy")
 }
 
 // Catenulate implements a handler that replaces the request body
